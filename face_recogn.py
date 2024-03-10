@@ -133,13 +133,72 @@ def create_database() -> list[object]:
         faces.append(face)
     return faces
 
+class VideoRecognition:
+    def __init__(self, faces: list[object], video_path: str):
+        self.faces = faces
+        self.video_path = video_path
+
+    def detect_faces(self, frame, threshold=0.6):
+        print('yeeeeeeeeeeeeee')
+        # Convert the frame from BGR to RGB
+        rgb_frame = frame[:, :, ::-1]
+
+        # Find all the face locations and encodings in the current frame
+        locs = face_recognition.face_locations(rgb_frame, model='hog')
+        vecs = face_recognition.face_encodings(rgb_frame, locs, num_jitters=1)
+        
+        # Process each detected face
+        for loc, vec in zip(locs, vecs):
+            distances = []
+            for face in self.faces:
+                distance = face_recognition.face_distance([vec], face.feature_vector)
+                distances.append(distance)
+            
+            # Determine the predicted name for the face
+            if np.min(distances) > threshold:
+                pred_name = 'Unknown'
+            else:
+                pred_index = np.argmin(distances)
+                pred_name = self.faces[pred_index].name
+            
+            # Draw bounding box and label on the frame
+            top, right, bottom, left = loc
+            cv2.rectangle(frame, (left, top), (right, bottom), (0, 255, 0), 2)
+            cv2.putText(frame, pred_name, (left + 6, bottom - 6), cv2.FONT_HERSHEY_DUPLEX, 1.0, (255, 255, 255), 1)
+        
+        return frame
+
+    def detect_faces_in_video(self):
+        video_capture = cv2.VideoCapture(self.video_path)
+        if not video_capture.isOpened():
+            raise ValueError("Unable to open video file")
+
+        while True:
+            ret, frame = video_capture.read()
+            if not ret:
+                break
+            
+            # Process the current frame to detect faces
+            processed_frame = self.detect_faces(frame)
+
+            # Display the resulting frame with bounding boxes and labels
+            cv2.imshow('Video', processed_frame)
+
+            if cv2.waitKey(1) & 0xFF == ord('q'):
+                break
+
+        # Release video capture and destroy OpenCV windows
+        video_capture.release()
+        cv2.destroyAllWindows()
+
 def main():
-    Task_1(image_path="input/task1_test1.png")
+    # Task_1(image_path="input/task1_test1.png")
     
-    faces = create_database()
+    # faces = create_database()
     
-    Task_2(image_path="input/task2_test4.jpg", faces=faces)
-    Task_2(image_path="input/task2_test3.jpg", faces=faces)
+    # Task_2(image_path="input/task2_test4.jpg", faces=faces)
+    # Task_2(image_path="input/task2_test3.jpg", faces=faces)
+    pass
 
 
 
