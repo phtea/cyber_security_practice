@@ -1,3 +1,6 @@
 venv/
 dlib/
 **/__pycache__/
+Stego_output/
+Stego_input/
+*.whl
