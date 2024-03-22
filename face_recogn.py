@@ -4,6 +4,7 @@ import face_recognition
 import numpy as np
 import matplotlib.pyplot as plt
 from tqdm import tqdm
+import pickle
 
 class Face:
     def __init__(self, bounding_box, cropped_face, name, feature_vector):
@@ -132,6 +133,16 @@ def create_database() -> list[object]:
         face = Face(bounding_box=loc, cropped_face=cropped_face, name=filename.split('.')[0], feature_vector=vec)
         faces.append(face)
     return faces
+
+def update_faces_database(filepath: str = 'faces.pickle') -> list[object]:
+    faces = create_database()
+    pickle.dump(faces, file = open(filepath, "wb"))
+    return faces
+
+def get_faces_database(filepath: str = 'faces.pickle') -> list[object]:
+    faces = pickle.load(open(filepath, "rb"))
+    return faces
+
 
 class VideoRecognition:
     def __init__(self, faces: list[object], video_path: str):
