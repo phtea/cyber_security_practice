@@ -1,16 +1,14 @@
-import face_recogn as fr
-import diffie_hellman
-import luhn
+import modules.face_recogn as fr
+import modules.diffie_hellman as diffie_hellman
+import modules.luhn as luhn
+import modules.steganography as steg
 
 def main():
-
-    fr.Task_1(image_path="input/task1_test1.png")
-
-    faces = fr.get_faces_database()
-    
-    fr.Task_2(image_path="input/task2_test4.jpg", faces=faces)
-    fr.Task_2(image_path="input/task2_test2.jpg", faces=faces)
-    fr.Task_2(image_path="input/task2_test3.jpg", faces=faces)
+    folder_path = 'Stego_input'
+    # path_to_image = folder_path + "/1019.png"
+    # message = steg.decode_file(path_to_image)
+    # print(message[0].decode(message[1])) # decode message[0] using message[1] decoder
+    steg.bulk_decode(folder_path, 'Stego_output')
 
 if __name__ == "__main__":
     main()
